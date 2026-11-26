@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>RoboMemo: Personalized Robot Manipulation from Everyday Smart-Glasses Recordings</title>
+  <meta name="description" content="RoboMemo turns everyday smart-glasses recordings into a Personal Context Store, so a frozen VLA policy can pick up the user's own object among look-alikes, and refuse when it is absent.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="RoboMemo: Personalized Robot Manipulation from Everyday Smart-Glasses Recordings">
+  <meta property="og:description" content="Mined personal context from smart-glasses recordings lets a frozen VLA select the user's own object and refuse when it is absent. 112 real-robot episodes on ALOHA 2.">
+  <meta property="og:url" content="https://xinleiyuleo.com/robomemo/">
+  <meta property="og:image" content="https://xinleiyuleo.com/robomemo/static/images/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+
+  <!-- Apply a saved light/dark choice before first paint to avoid a flash -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('robomemo-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+</head>
+<body>
+
+<a class="skip-link" href="#abstract">Skip to content</a>
+
+<!-- ============ Sticky section menu ============ -->
+<nav class="section-nav" id="sectionNav" aria-label="Sections">
+  <div class="section-nav__inner">
+    <a class="section-nav__brand wordmark" href="#top"><span class="is-sr-only">RoboMemo</span><span aria-hidden="true"><span class="g-blue">R</span><span class="g-red">o</span><span class="g-yellow">b</span><span class="g-blue">o</span><span class="g-green">M</span><span class="g-red">e</span><span class="g-blue">m</span><span class="g-red">o</span></span></a>
+    <div class="section-nav__links">
+      <a href="#video">Video</a>
+      <a href="#abstract">Overview</a>
+      <a href="#capture">Capture</a>
+      <a href="#system">System</a>
+      <a href="#demos">Demos</a>
+      <a href="#results">Results</a>
+      <a href="#faq">FAQ</a>
+      <a href="#bibtex">BibTeX</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme">
+      <i class="fa-solid fa-moon icon-moon" aria-hidden="true"></i>
+      <i class="fa-solid fa-sun icon-sun" aria-hidden="true"></i>
+    </button>
+  </div>
+</nav>
+
+<main id="top">
+
+  <!-- ============ Hero ============ -->
+  <header class="hero-block">
+    <div class="container is-max-desktop has-text-centered">
+      <span class="venue-tag">Under Review</span>
+
+      <h1 class="paper-title"><span class="wordmark"><span class="is-sr-only">RoboMemo</span><span aria-hidden="true"><span class="g-blue">R</span><span class="g-red">o</span><span class="g-yellow">b</span><span class="g-blue">o</span><span class="g-green">M</span><span class="g-red">e</span><span class="g-blue">m</span><span class="g-red">o</span></span></span>: Personalized Robot Manipulation from Everyday Smart-Glasses Recordings</h1>
+
+      <p class="authors">
+        <span class="author"><a href="https://xinleiyuleo.com">Xinlei Yu</a><sup>1,2,*</sup></span>
+        <span class="author">Yang Chen<sup>1</sup></span>
+        <span class="author">Andrew Nhu<sup>3,4,*</sup></span>
+        <span class="author">Bridget Liu<sup>1,5,*</sup></span>
+        <span class="author">Sean Yuan<sup>1</sup></span>
+        <span class="author">Luke Jia<sup>1</sup></span>
+        <span class="author">Heather Culbertson<sup>2</sup></span>
+      </p>
+      <p class="affiliations">
+        <span><sup>1</sup>Google</span>
+        <span><sup>2</sup>University of Southern California</span>
+        <span><sup>3</sup>Google DeepMind</span>
+        <span><sup>4</sup>University of Maryland, College Park</span>
+        <span><sup>5</sup>Columbia University</span>
+      </p>
+      <p class="author-note"><sup>*</sup>Work done during a Student Researcher appointment at Google / Google DeepMind.</p>
+
+      <div class="logo-row" aria-label="Affiliations">
+        <span class="logo-chip logo-chip--google"><img src="static/images/logos/google.svg" alt="Google"></span>
+        <span class="logo-chip"><img src="static/images/logos/usc.svg" alt="University of Southern California"></span>
+        <span class="logo-chip"><img src="static/images/logos/google-deepmind.svg" alt="Google DeepMind"></span>
+        <span class="logo-chip"><img src="static/images/logos/umd.svg" alt="University of Maryland"></span>
+        <span class="logo-chip"><img src="static/images/logos/columbia.svg" alt="Columbia University"></span>
+      </div>
+
+      <!-- A button with class "is-pending" and no href shows as "coming soon".
+           To activate one: add href="..." and remove class="is-pending" and aria-disabled. -->
+      <div class="link-row">
+        <!-- TODO: paper PDF link -->
+        <a class="link-btn is-pending" aria-disabled="true" title="Coming soon">
+          <i class="fa-solid fa-file-pdf" aria-hidden="true"></i><span>Paper</span>
+        </a>
+        <!-- TODO: arXiv link -->
+        <a class="link-btn is-pending" aria-disabled="true" title="Coming soon">
+          <i class="ai ai-arxiv" aria-hidden="true"></i><span>arXiv</span>
+        </a>
+        <a class="link-btn" href="#video">
+          <i class="fa-solid fa-circle-play" aria-hidden="true"></i><span>Video</span>
+        </a>
+        <!-- TODO: code link once the pipeline and harness are released -->
+        <a class="link-btn is-pending" aria-disabled="true" title="Pipeline and harness release planned">
+          <i class="fa-brands fa-github" aria-hidden="true"></i><span>Code</span>
+        </a>
+      </div>
+      <!-- TODO: remove this line once the Paper, arXiv and Code links are live -->
+      <p class="link-note">Paper, arXiv and code coming soon.</p>
+    </div>
+  </header>
+
+  <!-- ============ Supplementary video ============ -->
+  <section class="block-section block-section--tight" id="video" aria-label="TL;DR and supplementary video">
+    <div class="container is-max-desktop">
+      <p class="tldr">
+        <strong class="tldr__label wordmark"><span class="is-sr-only">TL;DR:</span><span aria-hidden="true"><span class="g-blue">T</span><span class="g-red">L</span>;<span class="g-yellow">D</span><span class="g-green">R</span></span></strong>
+        RoboMemo turns everyday smart-glasses recordings into a memory of your personal items and preferences. On the
+        robot side, its execution harness has a <strong>System 2 / System 1</strong> design: System 2 retrieves the
+        relevant memory, reasons over it and the live camera views with Gemini Robotics-ER 2 to decide whether to act,
+        then issues a language instruction to System 1, the Gemini Robotics On-Device VLA, which turns it into motor
+        actions. So the robot picks up <em>your</em> mug from a group of look-alikes, reaches for <em>your</em> tea
+        rather than a coworker's, and holds off when your item isn't on the table.
+      </p>
+      <div class="stat-row" aria-label="Highlights">
+        <div class="stat">
+          <span class="stat__value">14/16</span>
+          <span class="stat__label">Picks the user's own object among look-alikes</span>
+          <span class="stat__context">vs 5/16 for the category-level baseline</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value">5/6</span>
+          <span class="stat__label">Picks up the user's mug even beside a near-identical one</span>
+          <span class="stat__context">vs 0/6 for the category-level baseline</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value">8/8</span>
+          <span class="stat__label">Refuses when only a look-alike mug is there</span>
+          <span class="stat__context">vs 0/8 for the category-level baseline</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value">72.5%</span>
+          <span class="stat__label">Object questions answered correctly and backed by the right footage</span>
+          <span class="stat__context">vs 46.4% for the flat-memory baseline</span>
+        </div>
+      </div>
+      <p class="stat-note">Category-level baseline: the same robot and policy, told only the object category
+        (“put the mug into the tray”).</p>
+      <figure class="teaser">
+        <video data-src="static/videos/robomemo-supplementary.mp4" poster="static/images/posters/supplementary.webp"
+               controls playsinline preload="none" aria-label="RoboMemo supplementary video with narration"></video>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ Abstract ============ -->
+  <section class="block-section" id="abstract">
+    <div class="container is-max-desktop">
+      <h2 class="section-title"><span class="wordmark"><span class="is-sr-only">Abstract</span><span aria-hidden="true"><span class="g-blue">A</span><span class="g-red">b</span><span class="g-yellow">s</span><span class="g-blue">t</span><span class="g-green">r</span><span class="g-red">a</span><span class="g-blue">c</span><span class="g-red">t</span></span></span></h2>
+      <div class="content prose">
+        <p>
+          Generalist vision–language–action (VLA) policies have emerged as a general-purpose paradigm for instructing
+          robots in natural language across diverse manipulation tasks. However, personalized requests such as
+          “put my mug in the tray” refer to a specific object among visually similar ones, and resolving them requires
+          user-specific context that is currently hand-crafted through explicit descriptions or dedicated reference
+          photographs of each object. To address this limitation, we present <strong>RoboMemo</strong>, a two-stage
+          system that recovers this context by leveraging everyday smart-glasses recordings. An offline distillation
+          stage links observed interactions to object instances and builds a <em>Personal Context Store</em> of
+          natural-language descriptions and reference crops. At runtime, an execution harness conditions a frozen VLA
+          policy on the retrieved attributes and verifies object identity against live camera views before execution,
+          refusing when the requested object is absent, without modifying the policy itself.
+        </p>
+        <p>
+          We demonstrate on ALOHA 2, across 112 real-robot episodes, that RoboMemo performs on par with manual
+          hand-crafted context on instance selection, pickup, and task completion, while requiring no per-object
+          capture or annotation. In the near-twin robot study, RoboMemo picks up the correct mug in all five
+          target-present trials that proceed to execution (5/6 overall, versus 0/6 for No Context), and correctly
+          refuses in all eight target-absent trials. On a 12-hour multi-day corpus, RoboMemo additionally improves
+          evidence-supported retrieval of object queries over a flat-memory baseline. These results suggest that a
+          household robot could be personalized before its first day of use, from recordings its owner already makes,
+          rather than through a dedicated setup session for every object. We will release the RoboMemo pipeline along
+          with the harness module to facilitate future research on personalized robot manipulation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Overview figure ============ -->
+  <section class="block-section block-section--soft" id="overview">
+    <div class="container is-max-widescreen">
+      <h2 class="section-title">“My” Means One Specific Object</h2>
+      <p class="section-lead">
+        “Put my sunglasses into the tray” means one particular pair. When several similar pairs are on the table,
+        looks alone can't tell the robot which one is yours. What you have done with them before can.
+      </p>
+      <figure class="figure figure--card">
+        <img src="static/images/fig1-overview.webp" alt="RoboMemo overview: smart-glasses recordings are distilled into a Personal Context Store, which lets the robot pick the user's red heart sunglasses among look-alikes and abstain when the user's mug is absent." data-placeholder data-aspect="2182 / 932" width="2182" height="932">
+        <figcaption>
+          <strong>(A)</strong> RoboMemo turns several days of privacy-screened, first-person recordings into a Personal
+          Context Store: a short description and reference photos for each of the user's objects, linked back to the
+          footage they came from.
+          <strong>(B)</strong> To pick the user's object out of look-alikes, descriptions mined automatically work as well
+          as ones written by hand: the right object is chosen in 14/16 trials and the task is finished in 9/16 with
+          either, versus 5/16 and 3/16 when the robot is told only the category. <strong>(C)</strong> When the user's mug
+          is missing but a look-alike is on the table, visual memory lets the robot refuse before moving in 8/8 trials,
+          versus 0/8 without personal context.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ Key findings ============ -->
+  <section class="block-section" id="findings" aria-labelledby="findings-title">
+    <div class="container is-max-desktop">
+      <h2 class="section-title" id="findings-title">Key Findings</h2>
+      <div class="insight-grid">
+        <article class="insight">
+          <span class="insight__num">01</span>
+          <h3>Automatic memory works as well as writing it by hand</h3>
+          <p>
+            Descriptions and photos pulled automatically from smart-glasses footage give the same 14/16 correct choices
+            and 9/16 finished tasks as hand-written descriptions with photos taken for the purpose. Nobody has to
+            photograph or label each object.
+          </p>
+        </article>
+        <article class="insight">
+          <span class="insight__num">02</span>
+          <h3>Photos, not words, tell near-twins apart</h3>
+          <p>
+            When only a look-alike of the user's mug is on the table, RoboMemo refuses before moving in 8/8 trials
+            (0/8 for the category-level baseline). Words alone can't separate two near-identical mugs: in offline tests, a description
+            confirmed the right one in 0/36 cases, while reference photos from the recordings got 30/36.
+          </p>
+        </article>
+        <article class="insight">
+          <span class="insight__num">03</span>
+          <h3>What's left to fix is grasping, not recognition</h3>
+          <p>
+            RoboMemo picks the intended object in 14/16 trials but finishes the task in 9/16. The remaining failures
+            happen while grasping or placing the object, not while recognizing it.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Capture ============ -->
+  <section class="block-section block-section--soft" id="capture" aria-labelledby="capture-title">
+    <div class="container is-max-widescreen">
+      <h2 class="section-title" id="capture-title">Everyday Smart-Glasses Capture</h2>
+      <p class="section-lead">
+        There is no setup session for each object. Two members of the author team wore smart glasses during their own
+        work, and their objects show up in the footage as they pick them up, carry them and put them down. RoboMemo
+        mines its personal context from these recordings.
+      </p>
+      <ul class="fact-row" aria-label="About the recordings">
+        <li class="fact"><i class="fa-solid fa-clock" aria-hidden="true"></i>12 hours of recordings</li>
+        <li class="fact"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i>Multiple days</li>
+        <li class="fact"><i class="fa-solid fa-door-open" aria-hidden="true"></i>Multi-room office</li>
+        <li class="fact"><i class="fa-solid fa-user-group" aria-hidden="true"></i>Two wearers</li>
+        <li class="fact"><i class="fa-solid fa-clone" aria-hidden="true"></i>Four object pairs</li>
+      </ul>
+      <div class="capture-grid">
+        <figure class="capture-clip">
+          <video data-src="static/videos/capture/mug.mp4" poster="static/images/posters/capture-mug.webp"
+                 muted loop playsinline preload="none"
+                 aria-label="First-person view: the wearer walks up to a table and picks up a yellow mug with a Gemini cartoon."></video>
+          <figcaption><span class="capture-clip__tag">Mugs</span>Picking up the yellow Gemini mug from the meeting-room table.</figcaption>
+        </figure>
+        <figure class="capture-clip">
+          <video data-src="static/videos/capture/notebook.mp4" poster="static/images/posters/capture-notebook.webp"
+                 muted loop playsinline preload="none"
+                 aria-label="First-person view: the wearer picks up a blue notebook from a table."></video>
+          <figcaption><span class="capture-clip__tag">Notebooks</span>Picking up a blue notebook from the same table.</figcaption>
+        </figure>
+        <figure class="capture-clip">
+          <video data-src="static/videos/capture/sunglasses.mp4" poster="static/images/posters/capture-sunglasses.webp"
+                 muted loop playsinline preload="none"
+                 aria-label="First-person view: in a lounge, the wearer picks up red heart-shaped sunglasses from a coffee table."></video>
+          <figcaption><span class="capture-clip__tag">Sunglasses</span>Picking up the red heart sunglasses in the lounge.</figcaption>
+        </figure>
+        <figure class="capture-clip">
+          <video data-src="static/videos/capture/pouch.mp4" poster="static/images/posters/capture-pouch.webp"
+                 muted loop playsinline preload="none"
+                 aria-label="First-person view: the wearer picks up a white pouch from a table and carries it away."></video>
+          <figcaption><span class="capture-clip__tag">Pouches</span>Picking up a white pouch and carrying it away.</figcaption>
+        </figure>
+      </div>
+      <p class="table-note capture-note">
+        Clips are cropped from the wearers' recordings. The recorder's timestamp overlay is cropped out here; the
+        pipeline masks it before model input. Recording areas were checked beforehand to exclude bystanders, visible
+        personal identifiers and confidential materials.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ System ============ -->
+  <section class="block-section" id="system">
+    <div class="container is-max-widescreen">
+      <h2 class="section-title">System</h2>
+      <p class="section-lead">
+        RoboMemo works in two stages. Ahead of time, it goes through the user's recordings and builds a Personal
+        Context Store of their objects. When a request comes in, it looks up what it knows about the object, checks
+        that the object is really in front of the robot, and only then hands a more specific instruction to an
+        off-the-shelf robot policy (a VLA). The policy itself is never retrained.
+      </p>
+
+      <figure class="figure figure--card">
+        <img src="static/images/fig2-architecture.webp" alt="RoboMemo architecture: offline distillation with Qwen3-VL and SAM 3, query resolution with text retrieval and a visual answerer, and an execution harness where Gemini Robotics-ER 2 gates a frozen Gemini Robotics On-Device VLA on ALOHA 2." data-placeholder data-aspect="2310 / 1250" width="2310" height="1250">
+        <figcaption>
+          <strong>(a)</strong> Ahead of time, smart-glasses recordings become a Personal Context Store: descriptions and
+          reference images of the user's objects, each linked to the footage it came from. <strong>(b)</strong> For a
+          request like “my mug”, text search and a vision-language model gather the matching description and reference
+          images into one bundle. <strong>(c)</strong> The description is worked into the policy's instruction, while
+          Gemini Robotics-ER&nbsp;2 (ER2) compares the reference images with the live camera views and either lets the
+          robot act or refuses before it moves.
+        </figcaption>
+      </figure>
+
+      <div class="stage-grid">
+        <article class="stage">
+          <span class="stage__tag">a</span>
+          <h3>Offline personal context distillation</h3>
+          <p>Builds a memory of the user's objects from days of recordings, before any robot is involved.</p>
+          <ul class="step-list">
+            <li><strong>Privacy first.</strong> EgoBlur blurs faces and license plates before anything else runs.</li>
+            <li><strong>Spot interactions.</strong> Qwen3-VL watches overlapping 20&nbsp;s windows and notes when the wearer handles an object.</li>
+            <li><strong>Outline the object.</strong> SAM&nbsp;3 outlines objects of the named category (say, “mug”) in up to three frames.</li>
+            <li><strong>Keep the best views.</strong> A second Qwen pass keeps up to two clear crops per interaction, or none when it isn't sure.</li>
+          </ul>
+        </article>
+        <article class="stage">
+          <span class="stage__tag">b</span>
+          <h3>Query resolution</h3>
+          <p>Finds the evidence behind a request like “my mug”.</p>
+          <ul class="step-list">
+            <li><strong>Search.</strong> Keyword search (BM25) and embedding search (TIPSv2-L14) each rank the stored entries, and the two rankings are merged.</li>
+            <li><strong>Pick the evidence.</strong> A vision-language model looks at the top matches and chooses the description and reference images that fit.</li>
+            <li><strong>Hand off.</strong> The category, description and reference images go to the robot side as one bundle.</li>
+          </ul>
+        </article>
+        <article class="stage">
+          <span class="stage__tag">c</span>
+          <h3>Execution with personal context</h3>
+          <p>Checks first, then lets the unchanged policy do the moving.</p>
+          <ul class="step-list">
+            <li><strong>Verify.</strong> Gemini Robotics-ER&nbsp;2 compares the reference images with live views from above and from table height.</li>
+            <li><strong>Act.</strong> Only when the object is <span class="vstate-inline vstate-inline--ok">CONFIRMED</span> does Gemini Robotics On-Device get an instruction that names its look, like “the red sunglasses”.</li>
+            <li><strong>Follow up.</strong> ER2 checks at set points whether the task is done, and restarts the policy if it isn't.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="store-card">
+        <div class="store-card__capture">
+          <img src="static/images/capture-glasses.webp" alt="Smart glasses above a film strip of egocentric frames from Day 1, Day 3 and Day 6, each showing the user holding the same yellow mug." data-placeholder data-aspect="595 / 316" width="595" height="316">
+        </div>
+        <div class="store-card__entries">
+          <h3>Personal Context Store</h3>
+          <p class="muted">Built automatically from the wearer's own recordings. Each description comes with reference crops and links back to the frames they were cut from.</p>
+          <div class="store-entry">
+            <img src="static/images/store-sunglasses.webp" alt="Two reference crops of red heart-shaped sunglasses." data-placeholder data-aspect="366 / 79" width="366" height="79">
+            <q>Red heart sunglasses</q>
+          </div>
+          <div class="store-entry">
+            <img src="static/images/store-mug.webp" alt="Five reference crops of a yellow mug with a colorful printed cartoon, seen from different angles." data-placeholder data-aspect="584 / 123" width="584" height="123">
+            <q>Yellow mug with a colorful Gemini cartoon</q>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">The robot checks before it moves</h3>
+      <div class="vstate-grid">
+        <div class="vstate vstate--ok">
+          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+          <span class="vstate__name">CONFIRMED</span>
+          <span class="vstate__desc">It's the user's object, so the policy runs.</span>
+        </div>
+        <div class="vstate vstate--info">
+          <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+          <span class="vstate__name">UNVERIFIABLE</span>
+          <span class="vstate__desc">Can't tell from these views, so look again (up to two tries).</span>
+        </div>
+        <div class="vstate vstate--warn">
+          <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+          <span class="vstate__name">CONTRADICTED</span>
+          <span class="vstate__desc">What the robot sees doesn't match, so it refuses before moving.</span>
+        </div>
+        <div class="vstate vstate--violet">
+          <i class="fa-solid fa-ban" aria-hidden="true"></i>
+          <span class="vstate__name">ABSENT</span>
+          <span class="vstate__desc">The object isn't on the table, so it refuses before moving.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Real-robot demos ============ -->
+  <section class="block-section block-section--soft" id="demos">
+    <div class="container is-max-widescreen">
+      <h2 class="section-title">Real-Robot Demos</h2>
+      <p class="section-lead">
+        Same request, same robot (ALOHA 2), same policy. On the left the policy gets RoboMemo's personal context; on
+        the right it only knows the object category, such as “sunglasses” (No Context). Clips play side by side, in real time.
+      </p>
+
+      <div class="tabs-pill" role="tablist" aria-label="Demo scenarios" data-tabs>
+        <button type="button" role="tab" id="tab-demo-1" aria-controls="panel-demo-1" aria-selected="true">Sunglasses</button>
+        <button type="button" role="tab" id="tab-demo-2" aria-controls="panel-demo-2" aria-selected="false" tabindex="-1">Tea cans</button>
+        <button type="button" role="tab" id="tab-demo-3" aria-controls="panel-demo-3" aria-selected="false" tabindex="-1">Near-twin mugs</button>
+      </div>
+
+      <!-- Demo 1 -->
+      <div class="tab-panel" role="tabpanel" id="panel-demo-1" aria-labelledby="tab-demo-1">
+        <div class="demo-head">
+          <span class="command"><i class="fa-solid fa-comment" aria-hidden="true"></i><span>“Put <em>my</em> sunglasses into the tray”</span></span>
+          <span class="demo-head__desc">Three pairs of sunglasses on the table · 31&nbsp;s</span>
+        </div>
+        <div class="compare" data-sync>
+          <figure class="compare__item">
+            <figcaption class="compare__label compare__label--ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i>RoboMemo (C2)</figcaption>
+            <video data-src="static/videos/demos/exp1-sunglasses-robomemo.mp4" poster="static/images/posters/exp1-sunglasses-robomemo.webp" muted loop playsinline preload="none" aria-label="RoboMemo picks up the red heart sunglasses and places them in the tray"></video>
+            <p class="compare__note">Finds the user's red heart sunglasses and puts them in the tray.</p>
+          </figure>
+          <figure class="compare__item">
+            <figcaption class="compare__label compare__label--bad"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>No Context (C0)</figcaption>
+            <video data-src="static/videos/demos/exp1-sunglasses-nocontext.mp4" poster="static/images/posters/exp1-sunglasses-nocontext.webp" muted loop playsinline preload="none" aria-label="Without personal context, the policy grasps a look-alike pair"></video>
+            <p class="compare__note">Grabs one of the other pairs and doesn't finish the task.</p>
+          </figure>
+        </div>
+      </div>
+
+      <!-- Demo 2 -->
+      <div class="tab-panel" role="tabpanel" id="panel-demo-2" aria-labelledby="tab-demo-2" hidden>
+        <div class="demo-head">
+          <span class="command"><i class="fa-solid fa-comment" aria-hidden="true"></i><span>“Put <em>my</em> can into the tray”</span></span>
+          <span class="demo-head__desc">Several cans on the table · 28&nbsp;s</span>
+        </div>
+        <div class="compare" data-sync>
+          <figure class="compare__item">
+            <figcaption class="compare__label compare__label--ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i>RoboMemo (C2)</figcaption>
+            <video data-src="static/videos/demos/exp2-teacan-robomemo.mp4" poster="static/images/posters/exp2-teacan-robomemo.webp" muted loop playsinline preload="none" aria-label="RoboMemo picks up the orange tea can and places it in the tray"></video>
+            <p class="compare__note">Knows the user's can is the orange tea can, and puts it in the tray.</p>
+          </figure>
+          <figure class="compare__item">
+            <figcaption class="compare__label compare__label--bad"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>No Context (C0)</figcaption>
+            <video data-src="static/videos/demos/exp2-teacan-nocontext.mp4" poster="static/images/posters/exp2-teacan-nocontext.webp" muted loop playsinline preload="none" aria-label="Without personal context, the policy is confused by the same-category cans"></video>
+            <p class="compare__note">Can't tell the cans apart and doesn't pick up the user's.</p>
+          </figure>
+        </div>
+      </div>
+
+      <!-- Demo 3 -->
+      <div class="tab-panel" role="tabpanel" id="panel-demo-3" aria-labelledby="tab-demo-3" hidden>
+        <div class="demo-head">
+          <span class="command"><i class="fa-solid fa-comment" aria-hidden="true"></i><span>“Put <em>my</em> mug into the tray”</span></span>
+          <span class="demo-head__desc">Two mugs of the same size, shape and color; only the printed marking differs · 83&nbsp;s</span>
+        </div>
+        <div class="compare" data-sync>
+          <figure class="compare__item">
+            <figcaption class="compare__label compare__label--ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i>RoboMemo (C2)</figcaption>
+            <video data-src="static/videos/demos/exp3-mug-robomemo.mp4" poster="static/images/posters/exp3-mug-robomemo.webp" muted loop playsinline preload="none" aria-label="RoboMemo picks the mug with the Gemini sticker and completes the task after regrasping"></video>
+            <p class="compare__note">Picks the mug with the Gemini sticker. The heavy mug makes grasping slow, but the target choice never wavers and the task completes.</p>
+          </figure>
+          <figure class="compare__item">
+            <figcaption class="compare__label compare__label--bad"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>No Context (C0)</figcaption>
+            <video data-src="static/videos/demos/exp3-mug-nocontext.mp4" poster="static/images/posters/exp3-mug-nocontext.webp" muted loop playsinline preload="none" aria-label="Without personal context, the policy grasps the wrong near-twin mug"></video>
+            <p class="compare__note">Picks up the other, look-alike mug instead.</p>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Results ============ -->
+  <section class="block-section" id="results">
+    <div class="container is-max-desktop">
+      <h2 class="section-title">Results</h2>
+      <p class="section-lead">
+        Each cell shows successes out of trials, with the 95% confidence interval (Wilson, in %) in brackets. We compare
+        three ways of telling the robot about the user's object: <strong>C0</strong> No Context (only the category, as
+        in “my sunglasses”), <strong>C1</strong> Manual Context (a hand-written description plus photos taken for the
+        purpose) and <strong>C2</strong> RoboMemo (a description and crops pulled automatically from the recordings).
+      </p>
+
+      <div class="tabs-pill" role="tablist" aria-label="Result tables" data-tabs>
+        <button type="button" role="tab" id="tab-res-1" aria-controls="panel-res-1" aria-selected="true">Manipulation</button>
+        <button type="button" role="tab" id="tab-res-2" aria-controls="panel-res-2" aria-selected="false" tabindex="-1">Near-twin</button>
+        <button type="button" role="tab" id="tab-res-3" aria-controls="panel-res-3" aria-selected="false" tabindex="-1">Verification</button>
+        <button type="button" role="tab" id="tab-res-4" aria-controls="panel-res-4" aria-selected="false" tabindex="-1">Retrieval</button>
+      </div>
+
+      <!-- Table IV -->
+      <div class="tab-panel" role="tabpanel" id="panel-res-1" aria-labelledby="tab-res-1">
+        <h3 class="table-title">Picking the user's object among look-alikes <span class="muted">(tea cans and sunglasses, 24 trials per condition)</span></h3>
+        <div class="table-wrap">
+          <table class="table results-table">
+            <thead>
+              <tr>
+                <th scope="col" rowspan="2">Condition</th>
+                <th scope="colgroup" colspan="4" class="grp">Target present (n = 16)</th>
+                <th scope="col" class="grp">Absent (n = 8)</th>
+                <th scope="col" class="grp">All (n = 24)</th>
+              </tr>
+              <tr>
+                <th scope="col" class="num">Correct selection&nbsp;↑</th>
+                <th scope="col" class="num">Correct pickup&nbsp;↑</th>
+                <th scope="col" class="num">Task completion&nbsp;↑</th>
+                <th scope="col" class="num">Wrong selection&nbsp;↓</th>
+                <th scope="col" class="num">Correct refusal&nbsp;↑</th>
+                <th scope="col" class="num">Selective action&nbsp;↑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">No Context (C0)</th>
+                <td class="num">5/16<span class="ci">[14.2, 55.6]</span></td>
+                <td class="num">3/16<span class="ci">[6.6, 43.0]</span></td>
+                <td class="num">3/16<span class="ci">[6.6, 43.0]</span></td>
+                <td class="num">10/16<span class="ci">[38.6, 81.5]</span></td>
+                <td class="num">0/8<span class="ci">[0.0, 32.4]</span></td>
+                <td class="num">3/24<span class="ci">[4.3, 31.0]</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Manual Context (C1)</th>
+                <td class="num">14/16<span class="ci">[64.0, 96.5]</span></td>
+                <td class="num">13/16<span class="ci">[57.0, 93.4]</span></td>
+                <td class="num">9/16<span class="ci">[33.2, 76.9]</span></td>
+                <td class="num">2/16<span class="ci">[3.5, 36.0]</span></td>
+                <td class="num">6/8<span class="ci">[40.9, 92.9]</span></td>
+                <td class="num">15/24<span class="ci">[42.7, 78.8]</span></td>
+              </tr>
+              <tr class="is-ours">
+                <th scope="row">RoboMemo (C2)</th>
+                <td class="num">14/16<span class="ci">[64.0, 96.5]</span></td>
+                <td class="num">13/16<span class="ci">[57.0, 93.4]</span></td>
+                <td class="num">9/16<span class="ci">[33.2, 76.9]</span></td>
+                <td class="num">2/16<span class="ci">[3.5, 36.0]</span></td>
+                <td class="num">7/8<span class="ci">[52.9, 97.8]</span></td>
+                <td class="num">16/24<span class="ci">[46.7, 82.0]</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          Selection, pickup and completion mean the robot reached for, lifted and placed the right object in the tray.
+          <em>Selective action</em> counts the trials where the robot did the right thing overall: it finished the task
+          when the object was there, or refused when it wasn't. RoboMemo raises it from 12.5% to 66.7% compared with
+          No Context (p = 0.00024). For reference, an oracle control that skips identification and gives the policy
+          the right instruction directly completes the task in 6/8 trials.
+        </p>
+      </div>
+
+      <!-- Table V -->
+      <div class="tab-panel" role="tabpanel" id="panel-res-2" aria-labelledby="tab-res-2" hidden>
+        <h3 class="table-title">Near-identical mugs: picking and refusing <span class="muted">(two yellow mugs that differ only in a printed marking)</span></h3>
+        <div class="table-wrap">
+          <table class="table results-table results-table--narrow">
+            <thead>
+              <tr>
+                <th scope="col">Endpoint</th>
+                <th scope="col" class="num">No Context (C0)</th>
+                <th scope="col" class="num">RoboMemo (C2)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-group"><th scope="rowgroup" colspan="3">Target present (6 episodes)</th></tr>
+              <tr><th scope="row">Correct selection</th><td class="num">1/6<span class="ci">[3.0, 56.4]</span></td><td class="num is-best">5/6<span class="ci">[43.6, 97.0]</span></td></tr>
+              <tr><th scope="row">Correct pickup</th><td class="num">0/6<span class="ci">[0.0, 39.0]</span></td><td class="num is-best">5/6<span class="ci">[43.6, 97.0]</span></td></tr>
+              <tr><th scope="row">Full success</th><td class="num">0/6<span class="ci">[0.0, 39.0]</span></td><td class="num is-best">2/6<span class="ci">[9.7, 70.0]</span></td></tr>
+              <tr><th scope="row">Wrong selection&nbsp;↓</th><td class="num">5/6<span class="ci">[43.6, 97.0]</span></td><td class="num is-best">0/6<span class="ci">[0.0, 39.0]</span></td></tr>
+              <tr class="row-group"><th scope="rowgroup" colspan="3">Target absent (8 episodes)</th></tr>
+              <tr><th scope="row">Distractor rejection</th><td class="num">0/8<span class="ci">[0.0, 32.4]</span></td><td class="num is-best">8/8<span class="ci">[67.6, 100.0]</span></td></tr>
+              <tr class="row-group"><th scope="rowgroup" colspan="3">All (14 episodes)</th></tr>
+              <tr><th scope="row">Selective action</th><td class="num">0/14<span class="ci">[0.0, 21.5]</span></td><td class="num is-best">10/14<span class="ci">[45.4, 88.3]</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          When only the look-alike mug is on the table, RoboMemo refuses before moving in all 8 trials (p = 0.0078).
+          When the user's mug is there, RoboMemo picks it up in 5/6 trials; the unfinished tasks failed at grasping or
+          placing, not at recognizing the mug. Oracle control (right instruction given directly): 2/4 [15.0, 85.0].
+        </p>
+      </div>
+
+      <!-- Table II -->
+      <div class="tab-panel" role="tabpanel" id="panel-res-3" aria-labelledby="tab-res-3" hidden>
+        <h3 class="table-title">Checking identity: words vs. photos <span class="muted">(offline, ER2 on overhead and worm's-eye views)</span></h3>
+        <div class="table-wrap">
+          <table class="table results-table results-table--narrow">
+            <thead>
+              <tr>
+                <th scope="col">Scenes / target state</th>
+                <th scope="col" class="num">Description only</th>
+                <th scope="col" class="num">C1 references</th>
+                <th scope="col" class="num">C2 references</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Cans / sunglasses, present</th><td class="num">132/144</td><td class="num">133/144</td><td class="num">131/144</td></tr>
+              <tr><th scope="row">Cans / sunglasses, absent</th><td class="num">58/72</td><td class="num">72/72</td><td class="num is-best">72/72</td></tr>
+              <tr><th scope="row">Near-twin mugs, present</th><td class="num">0/36</td><td class="num">30/36</td><td class="num is-best">30/36</td></tr>
+              <tr><th scope="row">Near-twin mugs, absent</th><td class="num">3/48</td><td class="num">44/48</td><td class="num is-best">46/48</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          Correct answers from ER2, asked three times per pair of camera views. Every column gets the same RoboMemo
+          description; the two reference columns also get three photos. When the object is present, a correct answer
+          confirms the right one; when it's absent, a correct answer declines to confirm. Words can't separate the two
+          mugs (0/36), but photos can (30/36), because they keep details like the printed marking.
+        </p>
+      </div>
+
+      <!-- Table I -->
+      <div class="tab-panel" role="tabpanel" id="panel-res-4" aria-labelledby="tab-res-4" hidden>
+        <h3 class="table-title">Answering questions from 12 hours of recordings <span class="muted">(24 questions, three runs on the same memory)</span></h3>
+        <div class="table-wrap">
+          <table class="table results-table results-table--narrow">
+            <thead>
+              <tr>
+                <th scope="col">Measure</th>
+                <th scope="col" class="num">Flat Memory</th>
+                <th scope="col" class="num">RoboMemo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Strictly supported (/24)</th><td class="num">10 / 12 / 10</td><td class="num is-best">18 / 17 / 18</td></tr>
+              <tr><th scope="row">Semantic-weighted strict (/23)</th><td class="num">10 / 12 / 10</td><td class="num is-best">17 / 16 / 17</td></tr>
+              <tr><th scope="row">Temporal support (/10)</th><td class="num">3 / 3 / 3</td><td class="num is-best">5 / 4 / 5</td></tr>
+              <tr><th scope="row">Cross-session support (/14)</th><td class="num">7 / 9 / 7</td><td class="num is-best">13 / 13 / 13</td></tr>
+              <tr><th scope="row">Usable encounters (/37)</th><td class="num">35</td><td class="num">33</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          A question counts as <em>strictly supported</em> only if the answer is right and every image returned as proof
+          really shows the object, at the right time or across the right sessions. A human judged the answers without
+          knowing which method produced them. Flat Memory is a simpler baseline that shares RoboMemo's event detection
+          and candidate crops but picks crops by category, closeness to the hand and confidence, without RoboMemo's
+          visual check. RoboMemo raises the semantic-weighted strict score from 46.4% to 72.5% (+26.1 points), mostly
+          on questions that span several sessions, while storing fewer crops (142 vs 203), more of which clearly show
+          the object (81.7% vs 70.4%).
+        </p>
+      </div>
+
+      <figure class="figure figure--card figure--spaced">
+        <img src="static/images/fig3-qualitative.webp" alt="Qualitative near-twin examples: memory reference, pre-motion scene, identity decision and terminal outcome for RoboMemo and No Context." data-placeholder data-aspect="1698 / 1152" width="1698" height="1152">
+        <figcaption>
+          <strong>Examples with the near-identical mugs.</strong> With RoboMemo (C2), the robot confirms and picks up
+          the right mug, then either places it successfully or fails at placing it. When only the look-alike mug is
+          there, RoboMemo refuses before moving, while No Context (C0) picks up the look-alike.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="block-section block-section--soft" id="faq">
+    <div class="container is-max-desktop">
+      <h2 class="section-title">FAQ</h2>
+      <div class="faq">
+        <details>
+          <summary>Does RoboMemo fine-tune the robot policy?</summary>
+          <p>
+            No. The robot policy (Gemini Robotics On-Device) is used as-is for every user and task. RoboMemo only changes
+            the text instruction it receives, for example “the red sunglasses” instead of “my sunglasses”, and decides
+            whether to run it at all. The reference images and ER2's target point are never passed to the policy.
+          </p>
+        </details>
+        <details>
+          <summary>What happens when the requested object isn't there?</summary>
+          <p>
+            The robot refuses before it moves. First, Gemini Robotics-ER 2 compares the reference images with live views
+            from above and from table height. If the memory has nothing for the request, or the check comes back
+            <code>ABSENT</code> or <code>CONTRADICTED</code>, the robot refuses. If it comes back <code>UNVERIFIABLE</code>,
+            the robot looks again, up to two tries.
+          </p>
+        </details>
+        <details>
+          <summary>How are the recordings kept private?</summary>
+          <p>
+            EgoBlur blurs detected faces and license plates before processing, and recording environments were inspected
+            beforehand to exclude bystanders, visible personal identifiers and confidential materials. Distillation runs
+            locally on a single workstation (NVIDIA RTX PRO 6000 Blackwell) with Qwen3-VL-30B-A3B-Instruct and SAM 3.
+          </p>
+        </details>
+        <details>
+          <summary>What data and hardware were used?</summary>
+          <p>
+            A 12-hour corpus recorded over multiple days in a multi-room office by two members of the author team, with
+            four object pairs (mugs, notebooks, sunglasses, pouches). Robot trials ran on ALOHA 2, where the policy sees
+            four camera views and plans 50 steps of motion at a time, run at 50 Hz (one second per chunk).
+          </p>
+        </details>
+        <details>
+          <summary>What are the limitations?</summary>
+          <p>
+            RoboMemo can pass personal context to the policy only as words from a fixed instruction vocabulary, so once
+            the robot is moving, picking the right object is up to the policy. It also assumes objects don't change how
+            they look or who owns them, and the detail that tells two objects apart (like a printed logo) can face away
+            from the cameras. Most remaining failures happen while grasping and placing, not while recognizing the object.
+          </p>
+        </details>
+        <details>
+          <summary>Will the code be released?</summary>
+          <p>
+            Yes. We will release the RoboMemo distillation pipeline and execution harness. Public access to ER2 and
+            Gemini Robotics On-Device is subject to their providers' requirements.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BibTeX ============ -->
+  <section class="block-section" id="bibtex">
+    <div class="container is-max-desktop">
+      <h2 class="section-title">BibTeX</h2>
+      <div class="bibtex">
+        <button class="copy-btn" type="button" data-copy="bibtexCode">
+          <i class="fa-regular fa-copy" aria-hidden="true"></i><span class="copy-label">Copy</span>
+        </button>
+        <!-- TODO: replace with the arXiv entry once it exists -->
+<pre id="bibtexCode"><code>@misc{yu2026robomemo,
+  title  = {RoboMemo: Personalized Robot Manipulation from Everyday Smart-Glasses Recordings},
+  author = {Yu, Xinlei and Chen, Yang and Nhu, Andrew and Liu, Bridget and Yuan, Sean and Jia, Luke and Culbertson, Heather},
+  year   = {2026},
+  note   = {Under review}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container is-max-desktop">
+    <p>
+      Website adapted from the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> template and the
+      <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>,
+      licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.
+      Logos are trademarks of their respective owners.
+    </p>
+    <p><a href="https://xinleiyuleo.com">← Back to Xinlei Yu's homepage</a></p>
+  </div>
+</footer>
+
+<script src="static/js/index.js" defer></script>
+</body>
+</html>
